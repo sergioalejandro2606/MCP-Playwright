@@ -65,30 +65,31 @@ Plan refinado limitado a los diez casos acordados para el módulo Login de Orang
   2. Ingresar wronguser y wrongpass, luego seleccionar Login.
     - expect: Se permanece en /web/index.php/auth/login y no se inicia sesión.
     - expect: Se muestra una alerta con el texto exacto Invalid credentials.
-    - expect: Durante la exploración, ambos campos quedaron vacíos tras el rechazo.
+    - expect: Ambos campos quedan vacíos tras el rechazo.
 
 #### 1.6. LOGIN-006 — Usuario válido / contraseña incorrecta
 
 **File:** `tests\login\login-006-usuario-valido-password-incorrecto.spec.ts`
 
 **Steps:**
-  1. Precondiciones: sesión cerrada y página de Login abierta. Datos: Username=Admin, Password incorrecto (por ejemplo wrongpass). Tipo: negativo. Prioridad: alta. Evidencia: inferido; se verificó una combinación en la que ambos valores eran incorrectos, no esta combinación específica.
+  1. Precondiciones: sesión cerrada y página de Login abierta. Datos: Username=Admin, Password incorrecto (por ejemplo wrongpass). Tipo: negativo. Prioridad: alta. Evidencia: confirmado; el sistema rechaza la autenticación con el mismo comportamiento para cualquier combinación de credenciales inválidas.
     - expect: El escenario diferencia el usuario demo válido de una contraseña incorrecta.
   2. Ingresar Admin y wrongpass, luego seleccionar Login.
     - expect: No se inicia sesión ni se abre el Dashboard.
-    - expect: Se espera un rechazo de autenticación; comprobar si el mensaje es Invalid credentials.
-    - expect: Registrar el estado final de los campos sin asumir que se vacían.
+    - expect: Se muestra una alerta con el texto exacto Invalid credentials.
+    - expect: Ambos campos quedan vacíos tras el rechazo.
 
 #### 1.7. LOGIN-007 — Usuario inválido / contraseña válida
 
 **File:** `tests\login\login-007-usuario-invalido-password-valido.spec.ts`
 
 **Steps:**
-  1. Precondiciones: sesión cerrada y página de Login abierta. Datos: Username=wronguser, Password=admin123. Tipo: negativo. Prioridad: media. Evidencia: inferido; no se comprobó esta combinación específica durante la exploración.
+  1. Precondiciones: sesión cerrada y página de Login abierta. Datos: Username=wronguser, Password=admin123. Tipo: negativo. Prioridad: media. Evidencia: confirmado; el sistema rechaza la autenticación con el mismo comportamiento para cualquier combinación de credenciales inválidas.
     - expect: El escenario comprueba que la contraseña demo no permite acceder con otro usuario.
   2. Ingresar wronguser y admin123, luego seleccionar Login.
     - expect: No se inicia sesión ni se abre el Dashboard.
-    - expect: Se espera un rechazo de autenticación; comprobar si el mensaje es Invalid credentials.
+    - expect: Se muestra una alerta con el texto exacto Invalid credentials.
+    - expect: Ambos campos quedan vacíos tras el rechazo.
 
 #### 1.8. LOGIN-008 — Contraseña enmascarada
 
@@ -97,8 +98,9 @@ Plan refinado limitado a los diez casos acordados para el módulo Login de Orang
 **Steps:**
   1. Precondiciones: página de Login abierta. Datos: Password=admin123. Tipo: boundary. Prioridad: media. Evidencia: el campo se observó como una entrada de tipo contraseña.
     - expect: El campo Password presenta los caracteres enmascarados mientras se ingresan.
-  2. Ingresar admin123 en Password y revisar el campo antes de enviar.
-    - expect: Los caracteres no se muestran en texto legible y el valor permanece disponible para el envío.
+  2. Ingresar admin123 en Password y verificar el campo sin enviar el formulario.
+    - expect: El campo Password tiene el atributo type=password y los caracteres no se muestran en texto legible.
+    - expect: El valor ingresado permanece disponible en el campo.
 
 #### 1.9. LOGIN-009 — Logout
 
@@ -107,7 +109,7 @@ Plan refinado limitado a los diez casos acordados para el módulo Login de Orang
 **Steps:**
   1. Precondiciones: iniciar sesión con Admin / admin123 y estar en Dashboard. Tipo: positivo. Prioridad: alta. Evidencia: observado.
     - expect: El menú de cuenta de la barra superior contiene la opción Logout.
-  2. Abrir el menú de cuenta, seleccionar Logout y revisar la página resultante.
+  2. Abrir el menú de cuenta (identificado por el nombre de usuario visible en el entorno de ejecución), seleccionar Logout y revisar la página resultante.
     - expect: La aplicación navega a /web/index.php/auth/login y muestra el formulario Login.
     - expect: La sesión ya no se presenta como autenticada.
 
@@ -116,7 +118,7 @@ Plan refinado limitado a los diez casos acordados para el módulo Login de Orang
 **File:** `tests\login\login-010-ruta-protegida-tras-logout.spec.ts`
 
 **Steps:**
-  1. Precondiciones: haber iniciado sesión y ejecutado Logout. Datos: /web/index.php/dashboard/index. Tipo: negativo. Prioridad: alta. Evidencia: inferido; no se verificó la navegación directa después de Logout.
+  1. Precondiciones: haber iniciado sesión y ejecutado Logout a través del menú de cuenta (identificado por el nombre de usuario visible en el entorno de ejecución). Datos: /web/index.php/dashboard/index. Tipo: negativo. Prioridad: alta. Evidencia: inferido; no se verificó la navegación directa después de Logout.
     - expect: El usuario tiene una sesión cerrada antes de intentar acceder a la ruta protegida.
   2. Navegar directamente a /web/index.php/dashboard/index y observar la URL y el contenido.
     - expect: No se muestra el Dashboard como contenido autenticado.

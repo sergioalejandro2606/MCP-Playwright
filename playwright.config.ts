@@ -4,6 +4,25 @@ import path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+const environment = process.env.TEST_ENV ?? 'qa';
+
+const environments = {
+  dev: process.env.DEV_BASE_URL,
+  qa: process.env.QA_BASE_URL,
+};
+
+const baseURL =
+  environments[environment as keyof typeof environments];
+
+if (!baseURL) {
+  throw new Error(
+    `No existe una URL configurada para el ambiente "${environment}"`
+  );
+}
+
+console.log(`Ambiente seleccionado: ${environment.toUpperCase()}`);
+console.log(`URL objetivo: ${baseURL}`);
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -26,7 +45,7 @@ export default defineConfig({
   outputDir: 'test-results',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 use: {
-  baseURL: 'https://opensource-demo.orangehrmlive.com',
+  baseURL,
   trace: 'on-first-retry',
   screenshot: 'only-on-failure',
   video: 'retain-on-failure',
